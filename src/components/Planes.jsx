@@ -7,10 +7,10 @@ export default function Planes() {
   const ref = useReveal()
 
   function elegir(nombre) {
-    // preselecciona el plan y lleva al form
-    window.location.hash = `registro?plan=${encodeURIComponent(nombre)}`
-    // notifica al form (por si ya está montado y el hash no dispara re-montaje)
+    // notifica al form el plan elegido (se prellena en el paso de calificación)
     window.dispatchEvent(new CustomEvent('plan-elegido', { detail: nombre }))
+    // scroll suave al formulario
+    document.getElementById('registro')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   return (

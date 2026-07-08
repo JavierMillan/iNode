@@ -3,19 +3,37 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { FORM, WHATSAPP_NUMBER, APPS_SCRIPT_URL, GMAPS_KEY } from '../config.js'
 import { IconWhatsApp, IconAlert, IconCheck } from './Icons.jsx'
 
-// --- Google Places: carga perezosa (solo cuando el usuario toca el campo dirección) ---
+// --- Google Places (New): carga perezosa con el loader oficial ---
 let mapsPromise = null
 function loadGoogleMaps() {
   if (!GMAPS_KEY) return Promise.reject(new Error('sin-key'))
-  if (window.google?.maps?.places) return Promise.resolve()
+  if (window.google?.maps?.importLibrary) return Promise.resolve()
   if (!mapsPromise) {
     mapsPromise = new Promise((resolve, reject) => {
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${GMAPS_KEY}&libraries=places&language=es&region=MX`
-      script.async = true
-      script.onload = resolve
-      script.onerror = reject
-      document.head.appendChild(script)
+      // bootstrap oficial del loader de Google Maps JS (habilita importLibrary)
+      ;((g) => {
+        let h, a, k, p = 'The Google Maps JavaScript API'
+        const c = 'google', l = 'importLibrary', q = '__ib__', m = document, b = window
+        let bb = b[c] || (b[c] = {})
+        const d = bb.maps || (bb.maps = {}), r = new Set(), e = new URLSearchParams()
+        const u = () =>
+          h ||
+          (h = new Promise(async (res, rej) => {
+            a = m.createElement('script')
+            e.set('libraries', [...r] + '')
+            for (k in g) e.set(k.replace(/[A-Z]/g, (t) => '_' + t[0].toLowerCase()), g[k])
+            e.set('callback', c + '.maps.' + q)
+            a.src = `https://maps.${c}apis.com/maps/api/js?` + e
+            d[q] = res
+            a.onerror = () => (h = rej(Error(p + ' could not load.')))
+            a.nonce = m.querySelector('script[nonce]')?.nonce || ''
+            m.head.append(a)
+          }))
+        d[l]
+          ? console.warn(p + ' only loads once. Ignoring:', g)
+          : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)))
+      })({ key: GMAPS_KEY, v: 'weekly', language: 'es', region: 'MX' })
+      resolve()
     })
   }
   return mapsPromise
@@ -78,32 +96,69 @@ export default function ProspectoForm() {
   const [estado, setEstado] = useState('idle') // idle | enviando | exito
   const [ultimaUrl, setUltimaUrl] = useState('')
   const [dir, setDir] = useState(1) // dirección de la transición (1 adelante, -1 atrás)
+  const [sugerencias, setSugerencias] = useState([])
+  const [dirVerificada, setDirVerificada] = useState(false)
   const direccionRef = useRef(null)
-  const autocompleteListo = useRef(false)
+  const placesLib = useRef(null)      // { AutocompleteSuggestion, AutocompleteSessionToken, Place }
+  const sessionToken = useRef(null)
   const quieto = useReducedMotion()
 
+  // Carga perezosa de la librería Places (New) al enfocar el campo dirección
   function activarAutocomplete() {
-    if (autocompleteListo.current) return
-    autocompleteListo.current = true
+    if (placesLib.current) return
     loadGoogleMaps()
-      .then(() => {
-        const ac = new window.google.maps.places.Autocomplete(direccionRef.current, {
-          componentRestrictions: { country: 'mx' },
-          fields: ['formatted_address', 'geometry'],
-          types: ['address'],
-        })
-        ac.addListener('place_changed', () => {
-          const place = ac.getPlace()
-          const loc = place.geometry?.location
-          setDatos((d) => ({
-            ...d,
-            direccion: place.formatted_address ?? d.direccion,
-            lat: loc ? loc.lat().toFixed(6) : '',
-            lng: loc ? loc.lng().toFixed(6) : '',
-          }))
-        })
+      .then(() => window.google.maps.importLibrary('places'))
+      .then((lib) => {
+        placesLib.current = lib
+        sessionToken.current = new lib.AutocompleteSessionToken()
       })
-      .catch(() => {})
+      .catch(() => {}) // sin key o falla: el campo sigue como texto libre
+  }
+
+  // Pide sugerencias de dirección conforme el usuario escribe (Places New)
+  async function buscarDireccion(texto) {
+    setDirVerificada(false)
+    if (!placesLib.current || texto.trim().length < 4) {
+      setSugerencias([])
+      return
+    }
+    try {
+      const { suggestions } =
+        await placesLib.current.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+          input: texto,
+          sessionToken: sessionToken.current,
+          includedRegionCodes: ['mx'],
+          language: 'es',
+        })
+      setSugerencias(
+        (suggestions || [])
+          .filter((s) => s.placePrediction)
+          .slice(0, 5)
+          .map((s) => s.placePrediction)
+      )
+    } catch {
+      setSugerencias([])
+    }
+  }
+
+  // Al elegir una sugerencia: trae dirección formateada + lat/lng exactos
+  async function elegirDireccion(pred) {
+    try {
+      const place = pred.toPlace()
+      await place.fetchFields({ fields: ['formattedAddress', 'location'] })
+      setDatos((d) => ({
+        ...d,
+        direccion: place.formattedAddress ?? pred.text?.text ?? d.direccion,
+        lat: place.location ? place.location.lat().toFixed(6) : '',
+        lng: place.location ? place.location.lng().toFixed(6) : '',
+      }))
+      setDirVerificada(true)
+    } catch {
+      setDatos((d) => ({ ...d, direccion: pred.text?.text ?? d.direccion }))
+    }
+    setSugerencias([])
+    // nuevo token para la próxima búsqueda (facturación por sesión)
+    sessionToken.current = new placesLib.current.AutocompleteSessionToken()
   }
 
   // Preselección de plan desde una tarjeta (#registro?plan=... o evento)
@@ -263,18 +318,41 @@ export default function ProspectoForm() {
                   {/* Paso 2 — dirección */}
                   {paso === 1 && (
                     <>
-                      <div className="field">
+                      <div className="field field--dir">
                         <label htmlFor="campo-direccion">Tu dirección *</label>
-                        <input
-                          id="campo-direccion" ref={direccionRef} type="text" autoComplete="street-address"
-                          placeholder="Calle, número y colonia"
-                          value={datos.direccion} onChange={set('direccion')} onFocus={activarAutocomplete}
-                          aria-invalid={!!errores.direccion}
-                          aria-describedby={errores.direccion ? 'error-direccion' : 'helper-direccion'}
-                        />
+                        <div className="dir-wrap">
+                          <input
+                            id="campo-direccion" ref={direccionRef} type="text" autoComplete="off"
+                            placeholder="Escribe tu calle y número…"
+                            value={datos.direccion}
+                            onChange={(e) => { set('direccion')(e); buscarDireccion(e.target.value) }}
+                            onFocus={activarAutocomplete}
+                            aria-invalid={!!errores.direccion}
+                            aria-describedby={errores.direccion ? 'error-direccion' : 'helper-direccion'}
+                            aria-autocomplete="list"
+                          />
+                          {dirVerificada && (
+                            <span className="dir-check" title="Dirección verificada"><IconCheck /></span>
+                          )}
+                          {sugerencias.length > 0 && (
+                            <ul className="dir-sugerencias" role="listbox">
+                              {sugerencias.map((pred) => (
+                                <li key={pred.placeId} role="option" aria-selected="false">
+                                  <button type="button" onClick={() => elegirDireccion(pred)}>
+                                    {pred.text?.text ?? ''}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
                         {errores.direccion
                           ? <p className="error" id="error-direccion" role="alert"><IconAlert /> {errores.direccion}</p>
-                          : <p className="helper" id="helper-direccion">Entre más exacta, más rápido llega el técnico el día uno.</p>}
+                          : <p className="helper" id="helper-direccion">
+                              {dirVerificada
+                                ? 'Dirección verificada ✓ — así el técnico llega exacto.'
+                                : 'Empieza a escribir y elige tu dirección de la lista.'}
+                            </p>}
                       </div>
                       <div className="field">
                         <label htmlFor="campo-referencias">Referencias <span className="opcional">(opcional)</span></label>
