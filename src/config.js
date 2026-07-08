@@ -14,7 +14,7 @@ export const PHONE_DISPLAY = '443 257 3972'
 // --- Google Apps Script Web App (guarda registros en Google Sheet) ---
 // Pegar aquí la URL generada al publicar apps-script/Code.gs como Web App.
 // Si está vacío, el formulario funciona igual (solo WhatsApp, sin Sheet).
-export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYX5KHRkfcBUvfc-fcCadIitzfkNy0bKC9ZaCwwQA6IbzuZAf3cvtaMU9lU8eSnP9v/exec'
+export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoNQnYkS9j8KYJr4ipavHnfE8eD4N6p5TlISPf7SpudoHdvPnQlYU-_wVCTtxyUtew/exec'
 
 // --- Google Maps Places API (autocompletado de dirección) ---
 // Se inyecta en build: crear archivo .env con VITE_GMAPS_KEY=xxxx

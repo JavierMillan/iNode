@@ -1,27 +1,40 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useReducedMotion } from 'motion/react'
 
-// Espina dorsal de circuito: una línea vertical con nodos que recorre toda la
-// página (del hero al footer) con una corriente que fluye hacia abajo.
-// Se dibuja proporcional a la altura total del documento.
+// Espina dorsal de circuito: línea vertical con nodos que recorre toda la página
+// (del hero al footer) con corriente que fluye hacia abajo.
+// Mide la altura del CONTENIDO (main + footer), nunca la del documento completo,
+// para no realimentarse con su propia altura y romper el layout vertical.
 export default function EspinaCircuito() {
   const quieto = useReducedMotion()
   const [h, setH] = useState(0)
-  const ref = useRef(null)
 
   useEffect(() => {
-    const medir = () => setH(document.documentElement.scrollHeight)
+    let raf = 0
+    const medir = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        // altura real del contenido = fondo del footer (excluye la espina absoluta)
+        const footer = document.querySelector('.footer')
+        const alto = footer
+          ? Math.round(footer.getBoundingClientRect().bottom + window.scrollY)
+          : document.body.offsetHeight
+        setH((prev) => (Math.abs(prev - alto) > 2 ? alto : prev))
+      })
+    }
     medir()
+    // observa cambios de tamaño del contenido real, no del body entero
+    const main = document.querySelector('main')
     const ro = new ResizeObserver(medir)
-    ro.observe(document.body)
+    if (main) ro.observe(main)
+    document.querySelectorAll('.footer').forEach((el) => ro.observe(el))
     window.addEventListener('resize', medir)
-    return () => { ro.disconnect(); window.removeEventListener('resize', medir) }
+    return () => { ro.disconnect(); window.removeEventListener('resize', medir); cancelAnimationFrame(raf) }
   }, [])
 
-  if (!h) return <div className="espina" aria-hidden="true" ref={ref} />
+  if (!h) return <div className="espina" aria-hidden="true" />
 
   const W = 120
-  // trayectoria vertical con quiebres tipo circuito (baja en zig-zag suave)
   const segs = Math.max(4, Math.floor(h / 700))
   let d = `M60 0`
   let y = 0
@@ -37,7 +50,7 @@ export default function EspinaCircuito() {
   }
 
   return (
-    <div className="espina" aria-hidden="true" ref={ref}>
+    <div className="espina" aria-hidden="true" style={{ height: h }}>
       <svg viewBox={`0 0 ${W} ${h}`} width={W} height={h} preserveAspectRatio="none" fill="none">
         <path d={d} stroke="var(--color-sky)" strokeWidth="2" strokeOpacity="0.35" strokeLinecap="round" strokeLinejoin="round" />
         {!quieto && (

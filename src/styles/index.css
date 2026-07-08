@@ -405,11 +405,13 @@ section, [id] { scroll-margin-top: 88px; }
 .espina {
   position: absolute;
   top: 0;
+  bottom: 0;              /* se ancla a top y bottom del body: nunca lo extiende */
   left: max(8px, calc((100vw - 1120px) / 2 - 40px));
   width: 120px;
   z-index: 0;
   pointer-events: none;
   opacity: 0.5;
+  overflow: hidden;       /* si el svg se pasa, se recorta, no empuja el layout */
 }
 .espina svg { display: block; }
 @media (max-width: 1080px) {
