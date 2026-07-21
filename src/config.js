@@ -4,9 +4,9 @@
 // ============================================================
 
 // --- WhatsApp destino del formulario ---
-// PRUEBAS: número de Javier. PRODUCCIÓN: descomentar el oficial.
-export const WHATSAPP_NUMBER = '526221424577' // pruebas
-// export const WHATSAPP_NUMBER = '524432573972' // oficial (flyer)
+// OFICIAL (producción): número del flyer de Inter Node.
+export const WHATSAPP_NUMBER = '524432573972' // oficial
+// export const WHATSAPP_NUMBER = '526221424577' // pruebas (Javier)
 
 // Número mostrado en pantalla (formato legible)
 export const PHONE_DISPLAY = '443 257 3972'
@@ -14,7 +14,7 @@ export const PHONE_DISPLAY = '443 257 3972'
 // --- Google Apps Script Web App (guarda registros en Google Sheet) ---
 // Pegar aquí la URL generada al publicar apps-script/Code.gs como Web App.
 // Si está vacío, el formulario funciona igual (solo WhatsApp, sin Sheet).
-export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyoNQnYkS9j8KYJr4ipavHnfE8eD4N6p5TlISPf7SpudoHdvPnQlYU-_wVCTtxyUtew/exec'
+export const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxisUgEa4Tbn1Id_7LILqXJuAGS8gi2j0Vc2Bzw8LAIXN_XpOxmnO1gEuhkfiMbqw0/exec'
 
 // --- Google Maps Places API (autocompletado de dirección) ---
 // Se inyecta en build: crear archivo .env con VITE_GMAPS_KEY=xxxx
