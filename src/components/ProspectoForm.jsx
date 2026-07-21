@@ -303,7 +303,7 @@ export default function ProspectoForm() {
                         <label htmlFor="campo-telefono">Tu WhatsApp *</label>
                         <input
                           id="campo-telefono" type="tel" inputMode="numeric" autoComplete="tel"
-                          placeholder="Ej. 622 142 4577"
+                          placeholder="Ej. 443 123 4567"
                           value={datos.telefono} onChange={set('telefono')}
                           aria-invalid={!!errores.telefono}
                           aria-describedby={errores.telefono ? 'error-telefono' : 'helper-telefono'}

@@ -6,7 +6,7 @@
 // --- WhatsApp destino del formulario ---
 // OFICIAL (producción): número del flyer de Inter Node.
 export const WHATSAPP_NUMBER = '524432573972' // oficial
-// export const WHATSAPP_NUMBER = '526221424577' // pruebas (Javier)
+// Para pruebas: reemplazar por otro número con formato 52 + lada + número.
 
 // Número mostrado en pantalla (formato legible)
 export const PHONE_DISPLAY = '443 257 3972'
