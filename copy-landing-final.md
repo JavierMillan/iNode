@@ -53,9 +53,9 @@ Cuerpo (feel-felt-found): `Sabemos que suena a promesa de comercial — todos di
 ### Planes
 Encabezado: `Los planes que llegarán a tu zona`
 Sub: `Velocidades simétricas, 100% fibra óptica. Ideal para streaming, gaming y home office.`
-- `Plan Hogar` · `50 Mbps` · `$350/mes` · `Para estar conectado sin preocuparte.`
-- ⭐ `Plan Familiar` (badge: `El más elegido`) · `100 Mbps` · `$550/mes` · `Para que nadie en casa tenga que turnarse el internet.`
-- `Plan Premium` · `200 Mbps` · `$750/mes` · `Para los que viven, trabajan y juegan en línea.`
+- `Plan Hogar` · `100 Mbps` · `$350/mes` · `Para estar conectado sin preocuparte.`
+- ⭐ `Plan Familiar` (badge: `El más elegido`) · `200 Mbps` · `$550/mes` · `Para que nadie en casa tenga que turnarse el internet.`
+- `Plan Premium` · `500 Mbps` · `$750/mes` · `Para los que viven, trabajan y juegan en línea.`
 Nota bajo cards: `Precios de lanzamiento. Aparta tu lugar hoy y te avisamos en cuanto tu zona esté lista.`
 
 ### Formulario — "Aparta tu lugar"

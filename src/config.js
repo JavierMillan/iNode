@@ -75,9 +75,9 @@ export const PLANES = {
   sub: 'Velocidades simétricas, 100% fibra óptica. Ideal para streaming, gaming y home office.',
   nota: 'Precios de lanzamiento. Aparta tu lugar hoy y te avisamos en cuanto tu zona esté lista.',
   items: [
-    { nombre: 'Plan Hogar', mbps: 50, precio: 350, d: 'Para estar conectado sin preocuparte.', destacado: false },
-    { nombre: 'Plan Familiar', mbps: 100, precio: 550, d: 'Para que nadie en casa tenga que turnarse el internet.', destacado: true, badge: 'El más elegido' },
-    { nombre: 'Plan Premium', mbps: 200, precio: 750, d: 'Para los que viven, trabajan y juegan en línea.', destacado: false },
+    { nombre: 'Plan Hogar', mbps: 100, precio: 350, d: 'Para estar conectado sin preocuparte.', destacado: false },
+    { nombre: 'Plan Familiar', mbps: 200, precio: 550, d: 'Para que nadie en casa tenga que turnarse el internet.', destacado: true, badge: 'El más elegido' },
+    { nombre: 'Plan Premium', mbps: 500, precio: 750, d: 'Para los que viven, trabajan y juegan en línea.', destacado: false },
   ],
 }
 

@@ -39,7 +39,7 @@ Extraído del logo (degradado azul + globo naranja) y flyer. Armonía **compleme
 - Pairing rationale (← essence): Sora aporta el "somos técnicos y modernos" en titulares; Inter aporta el "te hablamos claro" en el cuerpo — profesionalismo cercano, no corporativo frío.
 - Type scale: base 16px · ratio 1.250 (Major Third) → 12·14·16·20·25·31·39·49.
 - Defaults: body leading 1.55 · headings 1.15 · tracking headings -0.5px (Sora abre mucho) · max line length 65ch.
-- Números de precios/velocidades: Sora 700 a escala grande (39-49px) — los números son protagonistas en un ISP (50/100/200 Mbps, $350/$550/$750).
+- Números de precios/velocidades: Sora 700 a escala grande (39-49px) — los números son protagonistas en un ISP (100/200/500 Mbps, $350/$550/$750).
 - Text alignment: izquierda por defecto; centrado solo en display ≤6 palabras y cards de planes.
 
 ## 4. Composition & layout doctrine
